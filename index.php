@@ -44,7 +44,9 @@ $app['mongo'] = function() use ($config) {
     return new MongoClient($config['mongo_url']);
 };
 
-$app['debug'] = true;
+if ($config['debug']) {
+    $app['debug'] = true;
+}
 
 // -- Routing ------------------------------------------------------------------
 
@@ -128,7 +130,7 @@ $app->get('/talks/{id}', function($id) use ($app) {
     }
 
     $votes = count($talk['scores']);
-    $avg = $count > 0 ? round($score / $count, 3) : null;
+    $avg = $votes > 0 ? round(array_sum($talk['scores']) / $votes, 3) : null;
 
     return $app['twig']->render('talk.twig', [
         'talk' => $talk,
@@ -149,7 +151,7 @@ $app->get('/talks/{id}/rate/{score}', function($id, $score) use ($app) {
     $talkID = new MongoID($id);
     $talk = $db->talks->findOne(["_id" => $talkID]);
     if ($talk === null) {
-        $app->abort(404, "Talk not found.");
+        return $app->abort(404, "Talk not found.");
     }
 
     $username = $app['security']->getToken()->getUser()->getUsername();
@@ -178,7 +180,7 @@ $app->get('/talks/{id}/unrate', function($id) use ($app) {
     $talkID = new MongoID($id);
     $talk = $db->talks->findOne(["_id" => $talkID]);
     if ($talk === null) {
-        $app->abort(404);
+        return $app->abort(404);
     }
 
     $username = $app['security']->getToken()->getUser()->getUsername();
@@ -188,13 +190,13 @@ $app->get('/talks/{id}/unrate', function($id) use ($app) {
     $db->talks->save($talk);
 
     $votes = count($talk['scores']);
-    $avg = $votes > 0 ? round($score / $votes, 3) : null;
+    $avg = $votes > 0 ? round(array_sum($talk['scores']) / $votes, 3) : null;
 
     return $app->json([
         'talk_id' => $id,
         'user' => $username,
         'avg_score' => $avg,
-        'votes' => $count
+        'votes' => $votes
     ]);
 })
 ->assert('id', '[0-9a-f]{24}')
