@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WebCamp 2014 submissions</title>
+
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.1.1/united/bootstrap.min.css" rel="stylesheet">
+    <style>
+        dt { margin-top:5px }
+        .nowrap { white-space: nowrap }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Webcamp Submissions</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar1">
+                    {% if user is defined %}
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="/logout">Logout</a></li>
+                        </ul>
+                        <p class="navbar-text navbar-right">Signed in as {{ user.username }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+
+        <div id="content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    {% block js %}
+    <script>
+        function remove_rating(talk_id)
+        {
+            var url = "/talks/" + talk_id + "/unrate";
+            response = $.getJSON(url, function(data) {
+                $row = $('*[data-talk-id="' + talk_id + '"]');
+
+                $row.find('.avg-score').html(data.avg_score);
+                $row.find('.votes').html(data.votes);
+                $row.find('button[data-rating]').attr('class', 'btn btn-sm btn-default');
+            });
+        }
+
+        function rate_talk(talk_id, score)
+        {
+            var url = "/talks/" + talk_id + "/rate/" + score;
+
+            response = $.getJSON(url, function(data) {
+                $row = $('*[data-talk-id="' + talk_id + '"]');
+
+                $row.find('.avg-score').html(data.avg_score);
+                $row.find('.votes').html(data.votes);
+                $row.find('button[data-rating]').attr('class', 'btn btn-sm btn-default');
+                $row.find('button[data-rating="' +  data.score +'"]').attr('class', 'btn btn-sm btn-primary');
+            });
+        }
+    </script>
+    {% endblock %}
+</body>
+</html>

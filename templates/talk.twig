@@ -1,0 +1,71 @@
+{% extends 'base.twig' %}
+
+{% set rating = talk.scores[user.username]|default(null) %}
+{% set votes = talk.scores|default([])|length %}
+
+{% block content %}
+    <div class="row" data-talk-id="{{ talk._id }}">
+        <div class="col-md-6">
+            <h2>{{ talk.title }}</h2>
+            <p>{{ talk.short_abstract|nl2br }}</p>
+
+            <h4>Abstract</h4>
+            {% for line in talk.long_abstract|split("\n") %}
+                <p>{{ line }}</p>
+            {% endfor %}
+
+            <dl>
+                <dt>Language</dt>
+                <dd>{{ talk.language }}</dd>
+
+                <dt>Level</dt>
+                <dd>{{ talk.level }}</dd>
+
+                <dt>Rating</dt>
+                <dd>
+                    {% include 'stars.twig' with { talk_id: talk._id, rating: rating } only %}<br />
+                    Avg:&nbsp;<span class="avg-score">{{ avg_score|default('-') }}</span>
+                    (<span class="votes">{{ votes }}</span> votes)
+                </dd>
+            </dl>
+        </div>
+
+        <div class="col-md-5 col-md-offset-1">
+            <h2>{{ speaker.name }}</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <p>{{ speaker.short_bio|nl2br }}</p>
+                    <p>
+                        <a href="mailto:{{ speaker.email }}">{{ speaker.email }}</a>
+                        {% if speaker.twitter %}
+                            <br /><a target="_blank" href="https://twitter.com/{{ speaker.twitter }}">@{{ speaker.twitter }}</a>
+                        {% endif %}
+                        {% if speaker.github %}
+                            <br /><a target="_blank" href="https://github.com/{{ speaker.github }}">github.com/{{ speaker.github }}</a>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <img src="{{ speaker.image }}" style="width: 100%" />
+                </div>
+            </div>
+
+            <h4>Bio</h4>
+            {% for line in speaker.long_bio|split("\n") %}
+                <p>{{ line }}</p>
+            {% endfor %}
+
+            <h4>Experience</h4>
+            <p>{{ speaker.experience|nl2br }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            {% if prev %}<a href="{{ path('talk', { id: prev._id }) }}">&lt;&lt;&nbsp;{{ prev.title }}</a>{% endif %}<br />
+        </div>
+        <div class="col-md-6 text-right">
+            {% if next %}<a href="{{ path('talk', { id: next._id }) }}">{{ next.title }}&nbsp;&gt;&gt;</a>{% endif %}
+        </div>
+    </div>
+{% endblock %}

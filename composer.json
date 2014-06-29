@@ -1,0 +1,8 @@
+{
+    "require": {
+        "silex/silex": "*",
+        "twig/twig": "*",
+        "symfony/security": "*",
+        "symfony/twig-bridge": "*"
+    }
+}

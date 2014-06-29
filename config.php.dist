@@ -1,0 +1,8 @@
+<?php
+
+$config = [
+    'mongo_url' => '<mongo-url>',
+    'users' => [
+        '<username>' => ['ROLE_ADMIN', "<hash>"],
+    ]
+];
