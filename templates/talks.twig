@@ -4,32 +4,46 @@
     <h1>Talks</h1>
 
     <table id="talks-table" class="table table-condensed">
-        <tr>
-            <th>Submitted</th>
-            <th>Speaker</th>
-            <th>Title</th>
-            <th>Language</th>
-            <th>Level</th>
-            <th>Avg.</th>
-            <th>Votes</th>
-            <th style="white-space: nowrap">Rate</th>
-        </tr>
-        {% for talk in talks %}
-            {% set rating = talk.scores[user.username]|default(null) %}
-            {% set votes = talk.scores|default([])|length %}
-
-            <tr data-talk-id="{{ talk._id }}">
-                <td>{{ talk.submitted }}</td>
-                <td>{{ talk.speaker.name }}</td>
-                <td><a href="/talks/{{ talk._id }}">{{ talk.title }}</a></td>
-                <td>{{ talk.language }}</td>
-                <td>{{ talk.level }}</td>
-                <td class="avg-score">{{ talk.avg_score }}</td>
-                <td class="votes">{{ votes }}</td>
-                <td class="nowrap">
-                    {% include 'stars.twig' with { talk_id: talk._id, rating: rating } only %}
-                </td>
+        <thead>
+            <tr>
+                <th>Submitted</th>
+                <th>Speaker</th>
+                <th>Title</th>
+                <th>Language</th>
+                <th>Level</th>
+                <th>Avg.</th>
+                <th>Votes</th>
+                <th style="white-space: nowrap">Rate</th>
             </tr>
-        {% endfor %}
+        </thead>
+        <tbody>
+            {% for talk in talks %}
+                {% set rating = talk.scores[user.username]|default(null) %}
+                {% set votes = talk.scores|default([])|length %}
+
+                <tr data-talk-id="{{ talk._id }}">
+                    <td>{{ talk.submitted }}</td>
+                    <td>{{ talk.speaker.name }}</td>
+                    <td><a href="/talks/{{ talk._id }}">{{ talk.title }}</a></td>
+                    <td>{{ talk.language }}</td>
+                    <td>{{ talk.level }}</td>
+                    <td class="avg-score">{{ talk.avg_score }}</td>
+                    <td class="votes">{{ votes }}</td>
+                    <td class="nowrap">
+                        {% include 'stars.twig' with { talk_id: talk._id, rating: rating } only %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#talks-table").tablesorter({
+
+        });
+    });
+</script>
 {% endblock %}
