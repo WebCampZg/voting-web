@@ -159,7 +159,7 @@ $app->get('/talks/{id}/rate/{score}', function($id, $score) use ($app) {
     $db->talks->save($talk);
 
     $votes = count($talk['scores']);
-    $avg = $votes > 0 ? round($score / $votes, 3) : null;
+    $avg = $votes > 0 ? round(array_sum($talk['scores']) / $votes, 3) : null;
 
     return $app->json([
         'talk_id' => $id,
