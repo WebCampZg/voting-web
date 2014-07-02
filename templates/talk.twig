@@ -27,6 +27,13 @@
                     Avg:&nbsp;<span class="avg-score">{{ avg_score|default('-') }}</span>
                     (<span class="votes">{{ votes }}</span> votes)
                 </dd>
+
+                <dt>Votes</dt>
+                <dd>
+                    {% for group, score in talk.scores %}
+                        {{ group }}: {{ score }}<br />
+                    {% endfor %}
+                </dd>
             </dl>
         </div>
 
