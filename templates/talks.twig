@@ -39,6 +39,7 @@
 {% endblock %}
 
 {% block js %}
+{{ parent() }}
 <script type="text/javascript">
     $(document).ready(function () {
         $("#talks-table").tablesorter({
