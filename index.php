@@ -98,7 +98,7 @@ $app->get('/talks', function() use ($app) {
 
     return $app['twig']->render('talks.twig', [
         'talks' => $talks,
-        'speakers' => $rSpeakers,
+        'speakers' => $speakers,
     ]);
 });
 
