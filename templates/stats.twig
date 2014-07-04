@@ -1,0 +1,35 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+
+    <h1>Voting statistics</h1>
+
+    <h2>Score distribution</h2>
+    {% for user, data in score_counts %}
+        <div id="score_counts_{{ user }}" style="width: 300px; height: 250px; float: left"></div>
+    {% endfor %}
+    <div class="clearfix"></div>
+
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            {% for user, data in score_counts %}
+            $('#score_counts_{{ user }}').highcharts({
+                chart: { type: 'column' },
+                title: { text: '{{ user }}' },
+                xAxis: { categories: [1, 2, 3, 4, 5] },
+                yAxis: { title: { text: 'Number of votes' } },
+                legend: { enabled: false },
+                series: [{
+                    data: {{ data|json_encode|raw }}
+                }]
+            });
+            {% endfor %}
+        });
+    </script>
+{% endblock %}

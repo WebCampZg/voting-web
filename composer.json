@@ -4,5 +4,10 @@
         "twig/twig": "*",
         "symfony/security": "*",
         "symfony/twig-bridge": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "WebCampZg\\VotingWeb\\": "src/"
+        }
     }
 }
