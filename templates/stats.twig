@@ -4,11 +4,21 @@
 
     <h1>Voting statistics</h1>
 
+    <h2>Number of cast votes</h2>
+
+    <div id="vote-counts"></div>
+
     <h2>Score distribution</h2>
-    {% for user, data in score_counts %}
-        <div id="score_counts_{{ user }}" style="width: 300px; height: 250px; float: left"></div>
+
+    {% for batch in score_counts|batch(4) %}
+        <div class="row">
+            {% for user, data in batch %}
+                <div class="col-sm-3">
+                    <div class="score-counts-chart" id="score-counts-{{ user }}"></div>
+                </div>
+            {% endfor %}
+        </div>
     {% endfor %}
-    <div class="clearfix"></div>
 
 {% endblock %}
 
@@ -19,17 +29,30 @@
     <script type="text/javascript">
         $(function () {
             {% for user, data in score_counts %}
-            $('#score_counts_{{ user }}').highcharts({
+            $('#score-counts-{{ user }}').highcharts({
                 chart: { type: 'column' },
                 title: { text: '{{ user }}' },
                 xAxis: { categories: [1, 2, 3, 4, 5] },
                 yAxis: { title: { text: 'Number of votes' } },
                 legend: { enabled: false },
                 series: [{
+                    name: "Times score given",
                     data: {{ data|json_encode|raw }}
                 }]
             });
             {% endfor %}
+
+            $('#vote-counts').highcharts({
+                chart: { type: 'column' },
+                title: { text: '' },
+                xAxis: { categories: {{ votes_cast_categories|json_encode|raw }} },
+                yAxis: { title: { text: 'Number of votes' } },
+                legend: { enabled: false },
+                series: [{
+                    data: {{ votes_cast_data|json_encode|raw }}
+                }]
+            });
+
         });
     </script>
 {% endblock %}
