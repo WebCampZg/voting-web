@@ -11,7 +11,7 @@ require abspath('vendor/autoload.php');
 
 $app = new Silex\Application();
 
-require abspath('web/config.php');
+require abspath('etc/config.php');
 require abspath('web/setup.php');
 require abspath('web/routing.php');
 

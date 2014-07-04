@@ -1,2 +1,3 @@
-config.php
-vendor
+/etc/config.php
+/vendor
+/composer.phar
