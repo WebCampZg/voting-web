@@ -1,13 +1,6 @@
 <?php
 
-function abspath($path)
-{
-    $root = realpath(__DIR__ . '/../');
-    $path = ltrim($path, '/\\');
-    return "$root/$path";
-}
-
-require abspath('vendor/autoload.php');
+require __DIR__ . '/../vendor/autoload.php';
 
 $app = new WebCampZg\VotingWeb\Application();
 
