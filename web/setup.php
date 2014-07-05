@@ -31,15 +31,10 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), [
     ]
 ]);
 
-$app['mongo'] = function() use ($config) {
-    // TODO: Deprecated, remove
-    return new MongoClient($config['mongo_url']);
-};
-
-$app['db'] = function() use ($config) {
+$app['db'] = $app->share(function() use ($config) {
     $client = new MongoClient($config['mongo_url']);
     return $client->webcamp;
-};
+});
 
 if ($config['debug']) {
     $app['debug'] = true;
@@ -50,10 +45,10 @@ if ($config['debug']) {
 use WebCampZg\VotingWeb\Controllers\StatsController;
 use WebCampZg\VotingWeb\Controllers\TalksController;
 
-$app['talks.controller'] = function() use ($app) {
+$app['talks.controller'] = $app->share(function() use ($app) {
     return new TalksController($app['db']);
-};
+});
 
-$app['stats.controller'] = function() use ($app) {
+$app['stats.controller'] = $app->share(function() use ($app) {
     return new StatsController($app['db']);
-};
+});

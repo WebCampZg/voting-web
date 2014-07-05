@@ -9,7 +9,7 @@ function abspath($path)
 
 require abspath('vendor/autoload.php');
 
-$app = new Silex\Application();
+$app = new WebCampZg\VotingWeb\Application();
 
 require abspath('etc/config.php');
 require abspath('web/setup.php');
