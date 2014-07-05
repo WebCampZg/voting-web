@@ -54,3 +54,22 @@ server {
     }
 }
 ```
+
+Creating users
+--------------
+
+To add an user, run the following command and enter data as prompted:
+
+```
+bin/webcamp adduser
+```
+
+To create an admin user, run:
+```
+bin/webcamp adduser --admin
+```
+
+It's possible to pass the username and password as commandline options:
+```
+bin/webcamp adduser --username=ivan --password="un grand poisson"
+```

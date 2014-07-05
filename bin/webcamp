@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use WebCampZg\VotingWeb\Application;
+use WebCampZg\VotingWeb\Console\WebcampApplication;
+use WebCampZg\VotingWeb\Console\AddUserCommand;
+
+$app = new Application();
+
+require abspath('etc/config.php');
+require abspath('web/setup.php');
+
+$application = new WebcampApplication();
+$application->add(new AddUserCommand($app));
+$application->run();
