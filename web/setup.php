@@ -3,6 +3,9 @@
 $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\ServiceControllerServiceProvider());
+
+// -- Templating ---------------------------------------------------------------
+
 $app->register(new Silex\Provider\TwigServiceProvider(), [
     'twig.path' => abspath('templates')
 ]);
@@ -11,6 +14,10 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $twig->addExtension(new Twig_Extension_Debug($app));
     return $twig;
 }));
+
+// -- Security -----------------------------------------------------------------
+
+use WebCampZg\VotingWeb\UserProvider;
 
 $app->register(new Silex\Provider\SecurityServiceProvider(), [
     'security.firewalls' => [
@@ -23,7 +30,9 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), [
                 'login_path' => '/login',
                 'check_path' => '/login_check'
             ],
-            'users' => $config['users'],
+            'users' => $app->share(function() use ($app) {
+                return new UserProvider($app['db']);
+            }),
             'logout' => [
                 'logout_path' => '/logout'
             ],

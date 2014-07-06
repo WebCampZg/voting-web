@@ -99,7 +99,7 @@ class TalksController
             return $app->abort(404, "Talk not found: $id");
         }
 
-        $username = $app['security']->getToken()->getUser()->getUsername();
+        $username = $app->user()->getUsername();
         $talk['scores'][$username] = $score;
         $this->db->talks->save($talk);
 
