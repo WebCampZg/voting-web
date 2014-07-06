@@ -17,29 +17,7 @@
 </head>
 <body>
     <div class="container">
-        <nav class="navbar navbar-default" role="navigation">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar1">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="/">Webcamp Submissions</a>
-                </div>
-
-                <div class="collapse navbar-collapse" id="navbar1">
-                    {% if user is defined %}
-                        <ul class="nav navbar-nav navbar-right">
-                            <li><a href="/logout">Logout</a></li>
-                        </ul>
-                        <p class="navbar-text navbar-right">Signed in as {{ user.username }}</p>
-                    {% endif %}
-                </div>
-            </div>
-        </nav>
-
+        {% include 'includes/navbar.twig' %}
         <div id="content">
             {% block content %}{% endblock %}
         </div>
@@ -48,7 +26,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="/static/jquery.tablesorter.min.js"></script>
-    {% block js %}
+
     <script>
         function rate_talk(talk_id, score)
         {
@@ -99,6 +77,8 @@
             });
         });
     </script>
+
+    {% block js %}
     {% endblock %}
 </body>
 </html>

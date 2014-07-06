@@ -23,9 +23,7 @@
 {% endblock %}
 
 {% block js %}
-    {{ parent() }}
     <script src="http://code.highcharts.com/highcharts.js"></script>
-
     <script type="text/javascript">
         $(function () {
             {% for user, data in score_counts %}

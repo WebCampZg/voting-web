@@ -24,7 +24,7 @@
                 {% if is_granted('ROLE_VOTER') %}
                 <dt>Your vote</dt>
                 <dd>
-                    {% include 'stars.twig' with { talk_id: talk._id, rating: rating } only %}<br />
+                    {% include 'includes/stars.twig' with { talk_id: talk._id, rating: rating } only %}<br />
                 </dd>
                 {% endif %}
             </dl>

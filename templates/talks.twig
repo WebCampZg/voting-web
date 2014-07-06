@@ -33,7 +33,7 @@
                     <td class="votes">{{ votes }}</td>
                     {% if is_granted('ROLE_VOTER') %}
                         <td class="nowrap">
-                            {% include 'stars.twig' with { talk_id: talk._id, rating: rating } only %}
+                            {% include 'includes/stars.twig' with { talk_id: talk._id, rating: rating } only %}
                         </td>
                     {% endif %}
                 </tr>
@@ -43,7 +43,6 @@
 {% endblock %}
 
 {% block js %}
-    {{ parent() }}
     <script type="text/javascript">
         $(document).ready(function () {
             $("#talks-table").tablesorter();
