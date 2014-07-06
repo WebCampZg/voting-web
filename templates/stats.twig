@@ -4,53 +4,59 @@
 
     <h1>Voting statistics</h1>
 
-    <h2>Number of cast votes</h2>
+    <h3>Votes cast</h3>
+
+    <p>Total number of votes cast per user group.</p>
 
     <div id="vote-counts"></div>
 
-    <h2>Score distribution</h2>
 
-    {% for batch in score_counts|batch(4) %}
-        <div class="row">
-            {% for user, data in batch %}
-                <div class="col-sm-3">
-                    <div class="score-counts-chart" id="score-counts-{{ user }}"></div>
-                </div>
-            {% endfor %}
-        </div>
-    {% endfor %}
+    <h3>Average vote</h3>
+
+    <p>The average score given per user group.</p>
+
+    <div id="average-vote"></div>
+
+
+    <h3>Score distribution</h3>
+
+    <p>How many times was each score given per user group.</p>
+
+    <div id="score-distribution"></div>
+
+
+    <h3>User group (dis)agreement</h3>
+
+    <p>Displays sum of absoulte difference in scores for all talks between groups.</p>
+    <p>The higher the number, the higher user disagreement.</p>
+
+    <div id="user-agreement"></div>
 
 {% endblock %}
 
 {% block js %}
-    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="//code.highcharts.com/highcharts.js"></script>
+    <script src="//code.highcharts.com/themes/grid.js"></script>
+    <script src="//code.highcharts.com/modules/heatmap.js"></script>
+
     <script type="text/javascript">
-        $(function () {
-            {% for user, data in score_counts %}
-            $('#score-counts-{{ user }}').highcharts({
-                chart: { type: 'column' },
-                title: { text: '{{ user }}' },
-                xAxis: { categories: [1, 2, 3, 4, 5] },
-                yAxis: { title: { text: 'Number of votes' } },
-                legend: { enabled: false },
-                series: [{
-                    name: "Times score given",
-                    data: {{ data|json_encode|raw }}
-                }]
-            });
-            {% endfor %}
+        $(document).ready(function () {
+            $('#vote-counts').highcharts(
+                {{ charts.vote_counts|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
+            );
 
-            $('#vote-counts').highcharts({
-                chart: { type: 'column' },
-                title: { text: '' },
-                xAxis: { categories: {{ votes_cast_categories|json_encode|raw }} },
-                yAxis: { title: { text: 'Number of votes' } },
-                legend: { enabled: false },
-                series: [{
-                    data: {{ votes_cast_data|json_encode|raw }}
-                }]
-            });
+            $('#average-vote').highcharts(
+                {{ charts.average_vote|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
+            );
 
+            $('#score-distribution').highcharts(
+                {{ charts.score_distribution|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
+            );
+
+
+            $('#user-agreement').highcharts(
+                {{ charts.user_agreement|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
+            );
         });
     </script>
 {% endblock %}
