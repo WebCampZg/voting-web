@@ -12,6 +12,9 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $twig->addExtension(new Twig_Extension_Debug($app));
+    $twig->addFilter(new Twig_SimpleFilter('vote_color', function ($vote) {
+        return voteColor($vote);
+    }));
     return $twig;
 }));
 

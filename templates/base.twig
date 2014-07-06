@@ -50,31 +50,54 @@
     <script src="/static/jquery.tablesorter.min.js"></script>
     {% block js %}
     <script>
-        function remove_rating(talk_id)
-        {
-            var url = "/talks/" + talk_id + "/unrate";
-            response = $.getJSON(url, function(data) {
-                $row = $('*[data-talk-id="' + talk_id + '"]');
-
-                $row.find('.avg-score').html(data.avg_score);
-                $row.find('.votes').html(data.votes);
-                $row.find('button[data-rating]').attr('class', 'btn btn-sm btn-default');
-            });
-        }
-
         function rate_talk(talk_id, score)
         {
             var url = "/talks/" + talk_id + "/rate/" + score;
 
-            response = $.getJSON(url, function(data) {
-                $row = $('*[data-talk-id="' + talk_id + '"]');
+            $.getJSON(url, function(data) {
+                $talk = $('.talk[data-talk-id="' + talk_id + '"]');
 
-                $row.find('.avg-score').html(data.avg_score);
-                $row.find('.votes').html(data.votes);
-                $row.find('button[data-rating]').attr('class', 'btn btn-sm btn-default');
-                $row.find('button[data-rating="' +  data.score +'"]').attr('class', 'btn btn-sm btn-primary');
+                // Round to 3 decimals
+                avg_score = Math.round(data.avg_score * 1000) / 1000;
+
+                $talk.find('.avg-score').html(avg_score);
+                $talk.find('.votes').html(data.votes);
+                $talk.find('.current-user-vote').html(data.score);
+                $talk.find('button[data-rating]').attr('class', 'btn btn-sm btn-default');
+                $talk.find('button[data-rating="' +  data.score +'"]').attr('class', 'btn btn-sm btn-primary');
             });
         }
+
+        function unrate_talk(talk_id)
+        {
+            var url = "/talks/" + talk_id + "/unrate";
+            $.getJSON(url, function(data) {
+                $talk = $('.talk[data-talk-id="' + talk_id + '"]');
+
+                // Round to 3 decimals
+                avg_score = Math.round(data.avg_score * 1000) / 1000;
+
+                $talk.find('.avg-score').html(avg_score);
+                $talk.find('.votes').html(data.votes);
+                $talk.find('.current-user-vote').html('-');
+                $talk.find('button[data-rating]').attr('class', 'btn btn-sm btn-default');
+            });
+        }
+
+        // Attach click event handlers to rating buttons
+        $(document).ready(function () {
+            $('.rate-talk').click(function() {
+                rate_talk(
+                    $(this).data('talk-id'),
+                    $(this).data('rating')
+                );
+            });
+            $('.unrate-talk').click(function() {
+                unrate_talk(
+                    $(this).data('talk-id')
+                );
+            });
+        });
     </script>
     {% endblock %}
 </body>

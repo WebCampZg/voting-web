@@ -1,9 +1,8 @@
-<button data-rating="1" type="button" onclick="rate_talk('{{ talk_id}}', 1)" class="btn btn-sm btn-{{ rating == 1 ? 'primary' : 'default' }}">1</button>
-<button data-rating="2" type="button" onclick="rate_talk('{{ talk_id}}', 2)" class="btn btn-sm btn-{{ rating == 2 ? 'primary' : 'default' }}">2</button>
-<button data-rating="3" type="button" onclick="rate_talk('{{ talk_id}}', 3)" class="btn btn-sm btn-{{ rating == 3 ? 'primary' : 'default' }}">3</button>
-<button data-rating="4" type="button" onclick="rate_talk('{{ talk_id}}', 4)" class="btn btn-sm btn-{{ rating == 4 ? 'primary' : 'default' }}">4</button>
-<button data-rating="5" type="button" onclick="rate_talk('{{ talk_id}}', 5)" class="btn btn-sm btn-{{ rating == 5 ? 'primary' : 'default' }}">5</button>
-
-<button onclick="remove_rating('{{ talk_id}}')" class="btn btn-sm btn-warning">
+<button data-rating="1" data-talk-id="{{ talk_id }}" type="button" class="rate-talk btn btn-sm btn-{{ rating == 1 ? 'primary' : 'default' }}">1</button>
+<button data-rating="2" data-talk-id="{{ talk_id }}" type="button" class="rate-talk btn btn-sm btn-{{ rating == 2 ? 'primary' : 'default' }}">2</button>
+<button data-rating="3" data-talk-id="{{ talk_id }}" type="button" class="rate-talk btn btn-sm btn-{{ rating == 3 ? 'primary' : 'default' }}">3</button>
+<button data-rating="4" data-talk-id="{{ talk_id }}" type="button" class="rate-talk btn btn-sm btn-{{ rating == 4 ? 'primary' : 'default' }}">4</button>
+<button data-rating="5" data-talk-id="{{ talk_id }}" type="button" class="rate-talk btn btn-sm btn-{{ rating == 5 ? 'primary' : 'default' }}">5</button>
+<button data-talk-id="{{ talk_id }}" type="button" class="unrate-talk btn btn-sm btn-warning">
     <span class="glyphicon glyphicon-remove"></span>
 </button>

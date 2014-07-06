@@ -34,9 +34,8 @@ class TalksController
         foreach ($talksIt as $talk) {
             $speakerID = (string) $talk['speaker_id'];
             $talk['speaker'] = $speakers[$speakerID];
-            $talk['submitted'] = date('d.m.Y H:i', $talk['submitted']->sec);
-            $talk['avg_score'] = !empty($talk['scores']) ?
-                array_sum($talk['scores']) / count($talk['scores']) : null;
+            $talk['submitted'] = $talk['submitted']->sec;
+            $talk['avg_score'] = $this->getAverageScore($talk);
             $talks[] = $talk;
         }
 
@@ -53,7 +52,7 @@ class TalksController
         $talkID = new MongoID($id);
         $talk = $this->db->talks->findOne(["_id" => $talkID]);
         if ($talk === null) {
-            return $app->abort(404, "Talk not found");
+            $app->abort(404, "Talk not found");
         }
 
         // Find next and previous talks
@@ -67,22 +66,26 @@ class TalksController
             ->sort(['submitted' => -1])
             ->limit(1)->getNext();
 
+        // Get a list of voting users to display non-voting users
+        $users = $this->db->users
+            ->distinct('username', ["roles" => "ROLE_VOTER"]);
+
+        sort($users);
+
         $speakerID = new MongoID($talk['speaker_id']);
         $speaker = $this->db->speakers->findOne(["_id" => $speakerID]);
         if ($speaker === null) {
-            return $app->abort(404, "Speaker not found");
+            $app->abort(404, "Speaker not found");
         }
-
-        $votes = count($talk['scores']);
-        $avg = $votes > 0 ? round(array_sum($talk['scores']) / $votes, 3) : null;
 
         return $app['twig']->render('talk.twig', [
             'talk' => $talk,
             'speaker' => $speaker,
             'next' => $next,
             'prev' => $prev,
-            'votes' => $votes,
-            'avg_score' => $avg,
+            'votes' => $this->getScoreCount($talk),
+            'avg_score' => $this->getAverageScore($talk),
+            'users' => $users,
         ]);
     }
 
@@ -96,22 +99,19 @@ class TalksController
         $talkID = new MongoID($id);
         $talk = $this->db->talks->findOne(["_id" => $talkID]);
         if ($talk === null) {
-            return $app->abort(404, "Talk not found: $id");
+            $app->abort(404, "Talk not found: $id");
         }
 
         $username = $app->user()->getUsername();
         $talk['scores'][$username] = $score;
         $this->db->talks->save($talk);
 
-        $votes = count($talk['scores']);
-        $avg = $votes > 0 ? round(array_sum($talk['scores']) / $votes, 3) : null;
-
         return $app->json([
             'talk_id' => $id,
             'user' => $username,
             'score' => $score,
-            'avg_score' => $avg,
-            'votes' => $votes
+            'avg_score' => $this->getAverageScore($talk),
+            'votes' => $this->getScoreCount($talk),
         ]);
     }
 
@@ -123,23 +123,38 @@ class TalksController
         $talkID = new MongoID($id);
         $talk = $this->db->talks->findOne(["_id" => $talkID]);
         if ($talk === null) {
-            return $app->abort(404, "Talk not found: $id");
+            $app->abort(404, "Talk not found: $id");
         }
 
-        $username = $app['security']->getToken()->getUser()->getUsername();
+        $username = $app->user()->getUsername();
         if (isset($talk['scores'][$username])) {
             unset($talk['scores'][$username]);
             $this->db->talks->save($talk);
         }
 
-        $votes = count($talk['scores']);
-        $avg = $votes > 0 ? round(array_sum($talk['scores']) / $votes, 3) : null;
-
         return $app->json([
             'talk_id' => $id,
             'user' => $username,
-            'avg_score' => $avg,
-            'votes' => $votes
+            'avg_score' => $this->getAverageScore($talk),
+            'votes' => $this->getScoreCount($talk),
         ]);
+    }
+
+    private function getScoreCount($talk)
+    {
+        if (empty($talk['scores'])) {
+            return null;
+        }
+
+        return count($talk['scores']);
+    }
+
+    private function getAverageScore($talk)
+    {
+        if (empty($talk['scores'])) {
+            return null;
+        }
+
+        return array_sum($talk['scores']) / count($talk['scores']);
     }
 }

@@ -1,2 +1,4 @@
 .score-counts-chart { height: 250px }
 #vote-counts { height: 300px }
+
+tfoot td { font-weight: bold; }

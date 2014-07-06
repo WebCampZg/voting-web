@@ -4,8 +4,8 @@
 {% set votes = talk.scores|default([])|length %}
 
 {% block content %}
-    <div class="row" data-talk-id="{{ talk._id }}">
-        <div class="col-md-6">
+    <div class="row">
+        <div class="col-md-6 talk" data-talk-id="{{ talk._id }}">
             <h2>{{ talk.title }}</h2>
             <p>{{ talk.short_abstract|nl2br }}</p>
 
@@ -21,20 +21,41 @@
                 <dt>Level</dt>
                 <dd>{{ talk.level }}</dd>
 
-                <dt>Rating</dt>
+                {% if is_granted('ROLE_VOTER') %}
+                <dt>Your vote</dt>
                 <dd>
                     {% include 'stars.twig' with { talk_id: talk._id, rating: rating } only %}<br />
-                    Avg:&nbsp;<span class="avg-score">{{ avg_score|default('-') }}</span>
-                    (<span class="votes">{{ votes }}</span> votes)
                 </dd>
-
-                <dt>Votes</dt>
-                <dd>
-                    {% for group, score in talk.scores %}
-                        {{ group }}: {{ score }}<br />
-                    {% endfor %}
-                </dd>
+                {% endif %}
             </dl>
+
+            <h4>Votes</h4>
+
+            <table class="table table-condensed" style="width: auto">
+                <thead>
+                    <tr>
+                        <th>Group</th>
+                        <th>Vote</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user }}</td>
+                            <td{% if user == app.user.username %} class="current-user-vote"{% endif %}>{{ talk.scores[user]|default("-") }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Average</td>
+                        <td>
+                            <span class="avg-score">{{ avg_score|number_format(3)|default('-') }}</span>
+                            (<span class="votes">{{ votes }}</span> votes)
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
 
         <div class="col-md-5 col-md-offset-1">
