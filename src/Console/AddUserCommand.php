@@ -100,20 +100,18 @@ class AddUserCommand extends Command
             throw new \Exception("User \"$username\"already exists.");
         }
 
-        // Encode the password
-        $user = new User($username, $password);
-        $salt = md5(microtime());
-
-        $encoder = $this->app['security.encoder_factory']->getEncoder($user);
-        $encPass = $encoder->encodePassword($password, $salt);
-
         $roles = $isAdmin ? ['ROLE_ADMIN'] : ['ROLE_USER'];
+
+        $user = new User($username, $password, $roles);
+
+        // Encode the password
+        $encoder = $this->app['security.encoder_factory']->getEncoder($user);
+        $encPass = $encoder->encodePassword($password, $user->getSalt());
 
         // Save to database
         $users->save([
             'username' => $username,
             'password' => $encPass,
-            'salt' => $salt,
             'roles' => $roles,
         ]);
 
