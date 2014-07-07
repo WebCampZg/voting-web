@@ -28,15 +28,14 @@
     <script src="/static/jquery.tablesorter.min.js"></script>
 
     <script>
-        function rate_talk(talk_id, score)
-        {
+        function rate_talk(talk_id, score) {
             var url = "/talks/" + talk_id + "/rate/" + score;
 
             $.getJSON(url, function(data) {
-                $talk = $('.talk[data-talk-id="' + talk_id + '"]');
+                var $talk = $('.talk[data-talk-id="' + talk_id + '"]');
 
                 // Round to 3 decimals
-                avg_score = Math.round(data.avg_score * 1000) / 1000;
+                var avg_score = Math.round(data.avg_score * 1000) / 1000;
 
                 $talk.find('.avg-score').html(avg_score);
                 $talk.find('.votes').html(data.votes);
@@ -46,19 +45,40 @@
             });
         }
 
-        function unrate_talk(talk_id)
-        {
+        function unrate_talk(talk_id) {
             var url = "/talks/" + talk_id + "/unrate";
+
             $.getJSON(url, function(data) {
-                $talk = $('.talk[data-talk-id="' + talk_id + '"]');
+                var $talk = $('.talk[data-talk-id="' + talk_id + '"]');
 
                 // Round to 3 decimals
-                avg_score = Math.round(data.avg_score * 1000) / 1000;
+                var avg_score = Math.round(data.avg_score * 1000) / 1000;
 
                 $talk.find('.avg-score').html(avg_score);
                 $talk.find('.votes').html(data.votes);
                 $talk.find('.current-user-vote').html('-');
                 $talk.find('button[data-rating]').attr('class', 'btn btn-sm btn-default');
+            });
+        }
+
+        function change_status(talk_id, status) {
+            var url = "/talks/" + talk_id + "/status/" + status;
+
+            $.getJSON(url, function(data) {
+                var $talk = $('.talk[data-talk-id="' + talk_id + '"]');
+                var $button = $talk.find('button[data-action="change-status"]');
+
+                $talk.find('.status').html(status);
+
+                if (status == 'accepted') {
+                    $talk.addClass('success');
+                    $button.attr('class', 'btn btn-sm btn-success');
+                    $button.data('status', 'pending');
+                } else {
+                    $talk.removeClass('success');
+                    $button.attr('class', 'btn btn-sm btn-default');
+                    $button.data('status', 'accepted');
+                }
             });
         }
 
@@ -70,15 +90,24 @@
                     $(this).data('rating')
                 );
             });
+
             $('.unrate-talk').click(function() {
                 unrate_talk(
                     $(this).data('talk-id')
+                );
+            });
+
+            $('*[data-action="change-status"]').click(function() {
+                change_status(
+                    $(this).data('talk-id'),
+                    $(this).data('status')
                 );
             });
         });
     </script>
 
     {% block js %}
+        {# Additional javascript can go here #}
     {% endblock %}
 </body>
 </html>

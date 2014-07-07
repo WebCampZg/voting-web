@@ -21,12 +21,15 @@
                 <dt>Level</dt>
                 <dd>{{ talk.level }}</dd>
 
-                {% if is_granted('ROLE_VOTER') %}
+                {% if is_granted('ROLE_VOTER') and talk.status == 'pending' %}
                 <dt>Your vote</dt>
                 <dd>
                     {% include 'includes/stars.twig' with { talk_id: talk._id, rating: rating } only %}<br />
                 </dd>
                 {% endif %}
+
+                <dt>Status</dt>
+                <dd><span class="label label-{{ talk.status == 'accepted' ? 'success' : 'default' }}">{{ talk.status|title }}</span></dd>
             </dl>
 
             <h4>Votes</h4>

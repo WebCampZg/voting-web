@@ -13,8 +13,11 @@
                 <th>Level</th>
                 <th>Avg.</th>
                 <th>Votes</th>
+                <th>Status</th>
                 {% if is_granted('ROLE_VOTER') %}
                     <th style="white-space: nowrap">Vote</th>
+                {% elseif is_granted('ROLE_ADMIN') %}
+                    <th style="white-space: nowrap">Change</th>
                 {% endif %}
             </tr>
         </thead>
@@ -23,7 +26,7 @@
                 {% set rating = talk.scores[user.username]|default(null) %}
                 {% set votes = talk.scores|default([])|length %}
 
-                <tr class="talk" data-talk-id="{{ talk._id }}">
+                <tr class="talk{% if talk.status == 'accepted' %} success{% endif %}" data-talk-id="{{ talk._id }}">
                     <td>{{ talk.submitted|date('Y-m-d H:i') }}</td>
                     <td>{{ talk.speaker.name }}</td>
                     <td><a href="/talks/{{ talk._id }}">{{ talk.title }}</a></td>
@@ -31,9 +34,16 @@
                     <td>{{ talk.level }}</td>
                     <td class="avg-score">{{ talk.avg_score|number_format(3) }}</td>
                     <td class="votes">{{ votes }}</td>
+                    <td class="status">{{ talk.status|title }}</td>
                     {% if is_granted('ROLE_VOTER') %}
                         <td class="nowrap">
-                            {% include 'includes/stars.twig' with { talk_id: talk._id, rating: rating } only %}
+                            {% if talk.status == 'pending' %}
+                                {% include 'includes/stars.twig' with { talk_id: talk._id, rating: rating } only %}
+                            {% endif %}
+                        </td>
+                    {% elseif is_granted('ROLE_ADMIN') %}
+                        <td class="nowrap">
+                            {% include 'includes/change_status.twig' with { talk_id: talk._id, status: talk.status } only %}
                         </td>
                     {% endif %}
                 </tr>
