@@ -36,6 +36,8 @@ $app->get('/talks/{id}', "talks.controller:showAction")
     ->assert('id', '[0-9a-f]{24}')
     ->bind('talk');
 
+// -- Talks JSON ---------------------------------------------------------------
+
 $app->get('/talks/{id}/rate/{score}', "talks.controller:rateJsonAction")
     ->assert('id', '[0-9a-f]{24}')
     ->assert('score', '[1-5]')
@@ -44,6 +46,12 @@ $app->get('/talks/{id}/rate/{score}', "talks.controller:rateJsonAction")
 $app->get('/talks/{id}/unrate', "talks.controller:unrateJsonAction")
     ->assert('id', '[0-9a-f]{24}')
     ->bind('unrate_talk');
+
+$app->get('/talks/{id}/status/{status}', "talks.controller:changeStatusJsonAction")
+    ->assert('id', '[0-9a-f]{24}')
+    ->assert('status', '[a-z]+')
+    ->bind('change_talk_status');
+
 
 // -- Stats --------------------------------------------------------------------
 

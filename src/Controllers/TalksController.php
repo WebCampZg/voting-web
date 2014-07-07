@@ -9,6 +9,16 @@ use Silex\Application;
 
 class TalksController
 {
+    const STATUS_PENDING = 'pending';
+    const STATUS_ACCEPTED = 'accepted';
+    const STATUS_HIDDEN = 'hidden';
+
+    private static $statuses = [
+        self::STATUS_PENDING,
+        self::STATUS_ACCEPTED,
+        self::STATUS_HIDDEN,
+    ];
+
     protected $db;
 
     public function __construct(MongoDB $db)
@@ -49,10 +59,9 @@ class TalksController
      */
     public function showAction(Application $app, $id)
     {
-        $talkID = new MongoID($id);
-        $talk = $this->db->talks->findOne(["_id" => $talkID]);
+        $talk = $this->getTalk($id);
         if ($talk === null) {
-            $app->abort(404, "Talk not found");
+            $app->abort(404, "Talk not found: $id");
         }
 
         // Find next and previous talks
@@ -96,10 +105,9 @@ class TalksController
     {
         $score = (integer) $score;
 
-        $talkID = new MongoID($id);
-        $talk = $this->db->talks->findOne(["_id" => $talkID]);
+        $talk = $this->getTalk($id);
         if ($talk === null) {
-            $app->abort(404, "Talk not found: $id");
+            return $app->json("Talk not found: $id", 404);
         }
 
         $username = $app->user()->getUsername();
@@ -120,10 +128,9 @@ class TalksController
      */
     public function unrateJsonAction(Application $app, $id)
     {
-        $talkID = new MongoID($id);
-        $talk = $this->db->talks->findOne(["_id" => $talkID]);
+        $talk = $this->getTalk($id);
         if ($talk === null) {
-            $app->abort(404, "Talk not found: $id");
+            return $app->json("Talk not found: $id", 404);
         }
 
         $username = $app->user()->getUsername();
@@ -137,6 +144,43 @@ class TalksController
             'user' => $username,
             'avg_score' => $this->getAverageScore($talk),
             'votes' => $this->getScoreCount($talk),
+        ]);
+    }
+
+    public function changeStatusJsonAction(Application $app, $id, $status)
+    {
+        if (!$app['security']->isGranted('ROLE_ADMIN')) {
+            return $app->json("Only admins may do this.", 403);
+        }
+
+        if (!in_array($status, self::$statuses)) {
+            return $app->json("Invalid status: $status", 400);
+        }
+
+        $talk = $this->getTalk($id);
+        if ($talk === null) {
+            return $app->json("Talk not found: $id", 404);
+        }
+
+        if ($talk['status'] != $status) {
+            $talk['status'] = $status;
+            $this->db->talks->save($talk);
+        }
+
+        return $app->json([
+            'talk_id' => $id,
+            'status' => $status
+        ]);
+    }
+
+    /**
+     * Returns a talk by ID or null if not found.
+     */
+    private function getTalk($id)
+    {
+        $talkID = new MongoID($id);
+        return $this->db->talks->findOne([
+            "_id" => $talkID
         ]);
     }
 
