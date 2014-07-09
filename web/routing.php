@@ -52,6 +52,8 @@ $app->get('/talks/{id}/status/{status}', "talks.controller:changeStatusJsonActio
     ->assert('status', '[a-z]+')
     ->bind('change_talk_status');
 
+$app->get('/talks/accepted.json', "talks.controller:acceptedTalksJsonAction")
+    ->bind('accepted_talks');
 
 // -- Stats --------------------------------------------------------------------
 

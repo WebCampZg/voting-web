@@ -173,6 +173,22 @@ class TalksController
         ]);
     }
 
+    public function acceptedTalksJsonAction(Application $app)
+    {
+        $talks = array();
+        $query = ['status' => 'accepted'];
+        foreach ($this->db->talks->find($query) as $talk) {
+            $talk['speaker'] = $this->db->speakers->findOne([
+                '_id' => $talk['speaker_id']
+            ]);
+            unset($talk['speaker_id']);
+            unset($talk['scores']);
+            $talks[] = $talk;
+        }
+
+        return $app->json($talks);
+    }
+
     /**
      * Returns a talk by ID or null if not found.
      */
