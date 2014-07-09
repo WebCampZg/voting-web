@@ -178,11 +178,17 @@ class TalksController
         $talks = array();
         $query = ['status' => 'accepted'];
         foreach ($this->db->talks->find($query) as $talk) {
-            $talk['speaker'] = $this->db->speakers->findOne([
+            $speaker = $this->db->speakers->findOne([
                 '_id' => $talk['speaker_id']
             ]);
+
+            unset($speaker['email']);
+            unset($speaker['experience']);
+
+            $talk['speaker'] = $speaker;
             unset($talk['speaker_id']);
             unset($talk['scores']);
+
             $talks[] = $talk;
         }
 
