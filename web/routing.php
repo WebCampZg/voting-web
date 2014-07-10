@@ -36,6 +36,11 @@ $app->get('/talks/{id}', "talks.controller:showAction")
     ->assert('id', '[0-9a-f]{24}')
     ->bind('talk');
 
+$app->get('/talks/{id}/edit', "talks.controller:editAction")
+    ->assert('id', '[0-9a-f]{24}')
+    ->bind('edit_talk');
+
+
 // -- Talks JSON ---------------------------------------------------------------
 
 $app->get('/talks/{id}/rate/{score}', "talks.controller:rateJsonAction")

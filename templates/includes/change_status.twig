@@ -1,9 +1,9 @@
 {% if status == 'accepted' %}
-    <button data-action="change-status" data-talk-id="{{ talk_id }}" data-status="pending" class="btn btn-sm btn-success">
+    <button data-action="change-status" data-talk-id="{{ talk_id }}" data-status="pending" class="btn btn-xs btn-success">
         <span class="glyphicon glyphicon-ok"></span>
     </button>
 {% elseif status == 'pending' %}
-    <button data-action="change-status" data-talk-id="{{ talk_id }}" data-status="accepted" class="btn btn-sm btn-default">
+    <button data-action="change-status" data-talk-id="{{ talk_id }}" data-status="accepted" class="btn btn-xs btn-default">
         <span class="glyphicon glyphicon-ok"></span>
     </button>
 {% endif %}

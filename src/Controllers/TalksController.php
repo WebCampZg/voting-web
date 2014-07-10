@@ -99,6 +99,21 @@ class TalksController
     }
 
     /**
+     * Displays a single talk.
+     */
+    public function editAction(Application $app, $id)
+    {
+        $talk = $this->getTalk($id);
+        if ($talk === null) {
+            $app->abort(404, "Talk not found: $id");
+        }
+
+        return $app['twig']->render('edit_talk.twig', [
+            'talk' => $talk,
+        ]);
+    }
+
+    /**
      * Sets a talk rating for the currently logged in user.
      */
     public function rateJsonAction(Application $app, $id, $score)
