@@ -32,6 +32,8 @@
                 <dd><span class="label label-{{ talk.status == 'accepted' ? 'success' : 'default' }}">{{ talk.status|title }}</span></dd>
             </dl>
 
+
+            {% if talk.status == 'accepted' or is_granted('ROLE_ADMIN') %}
             <h4>Votes</h4>
 
             <table class="table table-condensed" style="width: auto">
@@ -59,6 +61,7 @@
                     </tr>
                 </tfoot>
             </table>
+            {% endif %}
         </div>
 
         <div class="col-md-5 col-md-offset-1">
