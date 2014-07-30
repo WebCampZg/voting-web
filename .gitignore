@@ -1,3 +1,4 @@
 /etc/config.php
 /vendor
 /composer.phar
+/tmp
