@@ -209,8 +209,8 @@ class TalksController
 
         // Sort by speaker name
         usort($talks, function($a, $b) {
-            $a = $a['speaker']['name'];
-            $b = $b['speaker']['name'];
+            $a = explode(" ", $a['speaker']['name'])[1];
+            $b = explode(" ", $b['speaker']['name'])[1];
             if ($a == $b) {
                 return 0;
             }
