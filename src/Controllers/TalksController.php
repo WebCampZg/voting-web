@@ -207,6 +207,16 @@ class TalksController
             $talks[] = $talk;
         }
 
+        // Sort by speaker name
+        usort($talks, function($a, $b) {
+            $a = $a['speaker']['name'];
+            $b = $b['speaker']['name'];
+            if ($a == $b) {
+                return 0;
+            }
+            return ($a < $b) ? -1 : 1;
+        });
+
         return $app->json($talks);
     }
 
