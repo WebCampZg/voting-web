@@ -207,14 +207,12 @@ class TalksController
             $talks[] = $talk;
         }
 
-        // Sort by speaker name
-        usort($talks, function($a, $b) {
+        // Sort by speaker surname
+        $collator = new \Collator('hr_HR');
+        usort($talks, function($a, $b) use ($collator) {
             $a = explode(" ", $a['speaker']['name'])[1];
             $b = explode(" ", $b['speaker']['name'])[1];
-            if ($a == $b) {
-                return 0;
-            }
-            return ($a < $b) ? -1 : 1;
+            return $collator->compare($a, $b);
         });
 
         return $app->json($talks);
