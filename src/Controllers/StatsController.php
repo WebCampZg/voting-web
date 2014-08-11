@@ -92,13 +92,28 @@ class StatsController
         }
         ksort($averageScores);
 
+
+        // Standard deviation in scores per talk
+        $stdev = [];
+        foreach ($talks as $talk) {
+            $title = $talk['title'];
+            if (mb_strlen($title) > 50) {
+                $title = mb_substr($title, 0, 47) . "...";
+            }
+            $stdev[$title] = $this->stdev($talk['scores']);
+        }
+
+        asort($stdev);
+
         return $app['twig']->render('stats.twig', [
             'score_counts' => $scoreCounts,
             'scores_by_user' => $scoresByUser,
             'vote_counts' => $voteCounts,
             'average_scores' => $averageScores,
             'heatmap_data' => $heatmapData,
-            'users' => $users
+            'users' => $users,
+            'stdev_groups' => array_keys($stdev),
+            'stdev_data' => array_values($stdev),
         ]);
     }
 
@@ -109,5 +124,22 @@ class StatsController
         }
 
         return abs($scores[$user1] - $scores[$user2]);
+    }
+
+    private function stdev(array $scores)
+    {
+        if (empty($scores)) {
+            return null;
+        }
+        $count = count($scores);
+
+        $mean = array_sum($scores) / $count;
+
+        $sum = 0;
+        foreach ($scores as $score) {
+            $sum += pow($score - $mean, 2);
+        }
+
+        return sqrt($sum / $count);
     }
 }

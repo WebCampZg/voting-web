@@ -32,6 +32,12 @@
 
     <div id="user-agreement"></div>
 
+    <h3>Standard deviation of scores</h3>
+
+    <p>Shows the standard deviation in scores per talk. Smaller value means user groups were in agreement.</p>
+
+    <div id="score-stdev"></div>
+
 {% endblock %}
 
 {% block js %}
@@ -183,6 +189,33 @@
                     }
                 ]
             });
+
+            $('#score-stdev').highcharts({
+                "chart": {
+                    "type": "bar"
+                },
+                "title": {
+                    "text": ""
+                },
+                "xAxis": {
+                    "categories": {{ stdev_groups|json_encode|raw }}
+                },
+                "yAxis": {
+                    "title": {
+                        "text": "Number of votes"
+                    }
+                },
+                "legend": {
+                    "enabled": false
+                },
+                "series": [
+                    {
+                        "name": "Average vote",
+                        "data": {{ stdev_data|json_encode|raw }}
+                    }
+                ]
+            });
+
         });
     </script>
 {% endblock %}
