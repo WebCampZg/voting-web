@@ -44,11 +44,12 @@ class StatsController
         }
 
         // How many votes were cast per group
-        $numVotesCast = [];
+        $voteCounts = [];
         foreach ($users as $user) {
-            $numVotesCast[$user] = 0;
+            $voteCounts[$user] = 0;
         }
 
+        // Scores for all talks
         $talksScores = [];
 
         // Process data
@@ -56,130 +57,12 @@ class StatsController
             foreach ($talk['scores'] as $user => $score) {
                 $scoresByUser[$user][] = $score;
                 $scoreCounts[$user][$score]++;
-                $numVotesCast[$user]++;
+                $voteCounts[$user]++;
                 $talksScores[] = $talk['scores'];
             }
         }
 
-        // Gather chart data
-        $charts = [
-            'vote_counts' => $this->chartVotesCast($users, $numVotesCast),
-            'average_vote' => $this->chartAverageVote($users, $scoresByUser),
-            'score_distribution' => $this->chartScoreDistribution($users, $scoreCounts),
-            'user_agreement' => $this->chartUserAgreement($users, $talksScores),
-        ];
-
-        return $app['twig']->render('stats.twig', [
-            'charts' => $charts
-        ]);
-    }
-
-    /**
-     * Total number of votes cast per user group.
-     */
-    private function chartVotesCast($users, $votesCast)
-    {
-        return [
-            "chart" => [
-                "type" => "column"
-            ],
-            "title" => [
-                "text" => ""
-            ],
-            "xAxis" => [
-                "categories" => $users
-            ],
-            "yAxis" => [
-                "title" => [
-                    "text" => "Number of votes"
-                ]
-            ],
-            "legend" => [
-                "enabled" => false
-            ],
-            "series" => [[
-                "name" => "Votes cast",
-                "data" => array_values($votesCast)
-            ]]
-        ];
-    }
-
-    /**
-     * Average vote cast per user group.
-     */
-    private function chartAverageVote($users, $scoresByUser)
-    {
-        $data = [];
-        foreach($users as $user) {
-            if (!empty($scoresByUser[$user])) {
-                $data[] = array_sum($scoresByUser[$user]) / count($scoresByUser[$user]);
-            } else {
-                $data[] = 0;
-            }
-        }
-
-        return [
-            "chart" => [
-                "type" => "column"
-            ],
-            "title" => [
-                "text" => ""
-            ],
-            "xAxis" => [
-                "categories" => $users
-            ],
-            "yAxis" => [
-                "title" => [
-                    "text" => "Number of votes"
-                ]
-            ],
-            "legend" => [
-                "enabled" => false
-            ],
-            "series" => [[
-                "name" => "Votes cast",
-                "data" => $data
-            ]]
-        ];
-    }
-
-    private function chartScoreDistribution($users, $scoreCounts)
-    {
-        $series = [];
-        foreach (range(1, 5) as $score) {
-            $series[$score] = [
-                "name" => $score,
-                "data" => []
-            ];
-        }
-
-        foreach ($scoreCounts as $user => $scores) {
-            foreach ($scores as $score => $count) {
-                $series[$score]["data"][] = $count;
-            }
-        }
-
-        return [
-            "chart" => [
-                "type" => "column"
-            ],
-            "title" => [
-                "text" => ""
-            ],
-            "xAxis" => [
-                "categories" => $users
-            ],
-            "yAxis" => [
-                "title" => [
-                    "text" => "Number of votes"
-                ]
-            ],
-            "series" => array_values($series)
-        ];
-    }
-
-    private function chartUserAgreement($users, $talksScores)
-    {
+        // Heatmap data (user disagreement)
         $sums = [];
         foreach ($users as $key1 => $user1) {
             foreach ($users as $key2 => $user2) {
@@ -192,46 +75,31 @@ class StatsController
             }
         }
 
-        $data = [];
+        $heatmapData = [];
         foreach ($sums as $key1 => $sums1) {
             foreach ($sums1 as $key2 => $value) {
-                $data[] = [$key1, $key2, $value];
+                $heatmapData[] = [$key1, $key2, $value];
             }
         }
 
-        return [
-            "chart" => [
-                "type" => "heatmap",
-                "marginTop" =>  40,
-                "marginBottom" =>  40,
-            ],
-            "title" => [
-                "text" => ""
-            ],
-            "xAxis" => [
-                "categories" => $users
-            ],
-            "yAxis" => [
-                "categories" => $users
-            ],
-            "colorAxis" => [
-                "min" => 0,
-                "minColor" => '#FFFFFF',
-                "maxColor" => '#FF0000'
-            ],
-            "legend" => [
-                "align" => 'right',
-                "layout" => 'vertical',
-                "margin" => 0,
-                "verticalAlign" => 'top',
-                "y" => 25,
-                "symbolHeight" => 320
-            ],
-            "series" => [[
-                "name" => "User agreement",
-                "data" => $data
-            ]]
-        ];
+        // Average score by user
+        $averageScores = [];
+        foreach ($scoresByUser as $user => $scores) {
+            if (empty($scores)) {
+                $averageScores[$user] = null;
+            }
+            $averageScores[$user] = array_sum($scores) / count($scores);
+        }
+        ksort($averageScores);
+
+        return $app['twig']->render('stats.twig', [
+            'score_counts' => $scoreCounts,
+            'scores_by_user' => $scoresByUser,
+            'vote_counts' => $voteCounts,
+            'average_scores' => $averageScores,
+            'heatmap_data' => $heatmapData,
+            'users' => $users
+        ]);
     }
 
     private function getScoreDiff($scores, $user1, $user2)

@@ -35,28 +35,154 @@
 {% endblock %}
 
 {% block js %}
-    <script src="//code.highcharts.com/highcharts.js"></script>
-    <script src="//code.highcharts.com/themes/grid.js"></script>
-    <script src="//code.highcharts.com/modules/heatmap.js"></script>
+    <script src="/static/highcharts/4.0.3/highcharts.js"></script>
+    <script src="/static/highcharts/4.0.3/themes/grid.js"></script>
+    <script src="/static/highcharts/4.0.3/modules/heatmap.js"></script>
 
     <script type="text/javascript">
+        var vote_counts = {{ vote_counts|json_encode|raw }};
+        var average_scores = {{ average_scores|json_encode|raw }};
+        var score_counts = {{ score_counts|json_encode|raw }};
+
+        function object_values(object) {
+            var values = [];
+            for (var key in object) {
+                values.push(object[key]);
+            }
+
+            return values;
+        }
+
         $(document).ready(function () {
-            $('#vote-counts').highcharts(
-                {{ charts.vote_counts|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
-            );
 
-            $('#average-vote').highcharts(
-                {{ charts.average_vote|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
-            );
+            $('#vote-counts').highcharts({
+                "chart": {
+                    "type": "column"
+                },
+                "title": {
+                    "text": ""
+                },
+                "xAxis": {
+                    "categories": Object.keys(vote_counts)
+                },
+                "yAxis": {
+                    "title": {
+                        "text": "Number of votes"
+                    }
+                },
+                "legend": {
+                    "enabled": false
+                },
+                "series": [
+                    {
+                        "name": "Votes cast",
+                        "data": object_values(vote_counts)
+                    }
+                ]
+            });
 
-            $('#score-distribution').highcharts(
-                {{ charts.score_distribution|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
-            );
+            $('#average-vote').highcharts({
+                "chart": {
+                    "type": "column"
+                },
+                "title": {
+                    "text": ""
+                },
+                "xAxis": {
+                    "categories": Object.keys(average_scores)
+                },
+                "yAxis": {
+                    "title": {
+                        "text": "Number of votes"
+                    }
+                },
+                "legend": {
+                    "enabled": false
+                },
+                "series": [
+                    {
+                        "name": "Average vote",
+                        "data": object_values(average_scores)
+                    }
+                ]
+            });
+
+            var score_dist = {
+                1: [],
+                2: [],
+                3: [],
+                4: [],
+                5: [],
+            };
+
+            $.each(score_counts, function(group, values) {
+                $.each(values, function(score, count) {
+                    score_dist[score].push(count);
+                });
+            });
+
+            var score_dist_series = [];
+            $.each(score_dist, function(score, counts) {
+                score_dist_series.push({
+                    "name": score,
+                    "data": counts
+                });
+            });
+
+            $('#score-distribution').highcharts({
+                "chart": {
+                    "type": "column"
+                },
+                "title": {
+                    "text": ""
+                },
+                "xAxis": {
+                    "categories": Object.keys(score_counts)
+                },
+                "yAxis": {
+                    "title": {
+                        "text": "Number of votes"
+                    }
+                },
+                "series": score_dist_series
+            });
 
 
-            $('#user-agreement').highcharts(
-                {{ charts.user_agreement|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}
-            );
+            $('#user-agreement').highcharts({
+                "chart": {
+                    "type": "heatmap",
+                    "marginTop": 40,
+                    "marginBottom": 40
+                },
+                "title": {
+                    "text": ""
+                },
+                "xAxis": {
+                    "categories": {{ users|json_encode|raw }}
+                },
+                "yAxis": {
+                    "categories": {{ users|json_encode|raw }}
+                },
+                "colorAxis": {
+                    "min": 0,
+                    "minColor": "#FFFFFF",
+                    "maxColor": "#FF0000"
+                },
+                "legend": {
+                    "align": "right",
+                    "layout": "vertical",
+                    "margin": 0,
+                    "verticalAlign": "top",
+                    "y": 25,
+                    "symbolHeight": 320
+                },
+                "series": [
+                    {
+                        "name": "User agreement",
+                        "data": {{ heatmap_data|json_encode|raw }}
+                    }
+                ]
+            });
         });
     </script>
 {% endblock %}
