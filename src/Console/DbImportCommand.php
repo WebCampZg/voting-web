@@ -199,6 +199,9 @@ SQL;
                 $dt->format('U'),
                 $dt->format('u')
             );
+        } else {
+            // stupid hack for those with no date, so they can at least be sorted
+            $talk['submitted'] = new \MongoDate($talk['row_id']*60);
         }
 
         // Find if talk exists by row ID
