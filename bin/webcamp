@@ -6,6 +6,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use WebCampZg\VotingWeb\Application;
 use WebCampZg\VotingWeb\Console\WebCampApplication;
 use WebCampZg\VotingWeb\Console\AddUserCommand;
+use WebCampZg\VotingWeb\Console\DbImportCommand;
 use WebCampZg\VotingWeb\Console\EmailsCommand;
 use WebCampZg\VotingWeb\Console\ExportCommand;
 
@@ -18,6 +19,7 @@ $app->boot();
 
 $application = new WebCampApplication();
 $application->add(new AddUserCommand($app));
+$application->add(new DbImportCommand($app));
 $application->add(new EmailsCommand($app));
 $application->add(new ExportCommand($app));
 $application->run();
