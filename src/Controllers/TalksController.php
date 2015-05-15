@@ -44,7 +44,7 @@ class TalksController
         foreach ($talksIt as $talk) {
             $speakerID = (string) $talk['speaker_id'];
             $talk['speaker'] = $speakers[$speakerID];
-            $talk['submitted'] = $talk['submitted']->sec;
+            $talk['submitted'] = isset($talk['submitted']) ? $talk['submitted']->sec : null;
             $talk['avg_score'] = $this->getAverageScore($talk);
             $talks[] = $talk;
         }

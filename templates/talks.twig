@@ -9,7 +9,7 @@
                 <th>Submitted</th>
                 <th>Speaker</th>
                 <th>Title</th>
-                <th>Language</th>
+                <th>Duration</th>
                 <th>Level</th>
                 <th>Avg.</th>
                 <th>Votes</th>
@@ -30,7 +30,7 @@
                     <td>{{ talk.submitted|date('Y-m-d H:i') }}</td>
                     <td>{{ talk.speaker.name }}</td>
                     <td><a href="/talks/{{ talk._id }}">{{ talk.title }}</a></td>
-                    <td>{{ talk.language }}</td>
+                    <td>{{ talk.duration }}</td>
                     <td>{{ talk.level }}</td>
                     <td class="avg-score">{{ talk.avg_score|number_format(3) }}</td>
                     <td class="votes">{{ votes }}</td>
