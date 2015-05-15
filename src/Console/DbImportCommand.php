@@ -68,7 +68,7 @@ class DbImportCommand extends Command
         $password = $input->getOption('password');
         $dbname = $input->getArgument('dbname');
 
-        $pdo = new PDO("pgsql:dbname=$dbname", $username, $password);
+        $pdo = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password);
         $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
