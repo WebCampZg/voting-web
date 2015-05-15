@@ -40,6 +40,13 @@ class DbImportCommand extends Command
                'Database host name'
             )
             ->addOption(
+               'port',
+               'P',
+               InputOption::VALUE_REQUIRED,
+               'Database port',
+               5432
+            )
+            ->addOption(
                'username',
                'u',
                InputOption::VALUE_REQUIRED,
@@ -64,11 +71,12 @@ class DbImportCommand extends Command
         $this->output = $output;
 
         $host = $input->getOption('host');
+        $port = $input->getOption('port');
         $username = $input->getOption('username');
         $password = $input->getOption('password');
         $dbname = $input->getArgument('dbname');
 
-        $pdo = new PDO("pgsql:host=$host;dbname=$dbname", $username, $password);
+        $pdo = new PDO("pgsql:host=$host;port=$port;dbname=$dbname", $username, $password);
         $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
