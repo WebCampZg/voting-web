@@ -1,8 +1,26 @@
 <?php
 
+use Symfony\Component\HttpFoundation\Request;
+
 $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\ServiceControllerServiceProvider());
+
+// -- New Relic ----------------------------------------------------------------
+
+if (extension_loaded('newrelic')) {
+    newrelic_set_appname("WebCamp Vote");
+
+    // Route naming
+    $app->before(function (Request $request) use ($app) {
+        newrelic_name_transaction($request->get("_route"));
+    });
+
+    // Log uncaught errors
+    $app->error(function (Exception $ex) use ($app) {
+        newrelic_notice_error($ex->getMessage(), $ex);
+    });
+}
 
 // -- Templating ---------------------------------------------------------------
 
