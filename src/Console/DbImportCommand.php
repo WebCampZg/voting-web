@@ -37,7 +37,8 @@ class DbImportCommand extends Command
                'host',
                'H',
                InputOption::VALUE_REQUIRED,
-               'Database host name'
+               'Database host name',
+               'localhost'
             )
             ->addOption(
                'port',
@@ -50,7 +51,8 @@ class DbImportCommand extends Command
                'username',
                'u',
                InputOption::VALUE_REQUIRED,
-               'Database username'
+               'Database username',
+               'webcamp'
             )
             ->addOption(
                'password',
@@ -126,7 +128,8 @@ SQL;
                 pa.title,
                 pa.about AS short_abstract,
                 pa.abstract AS long_abstract,
-                null AS submitted,
+                pa.created_at AS submitted,
+                pa.updated_at AS updated,
                 sl.name as level,
                 pa.duration,
                 u.email
@@ -200,17 +203,11 @@ SQL;
         $talk['speaker_id'] = $speaker['_id'];
 
         // Convert the submission date
-        if ($talk['submitted'] !== null) {
-            $dt = new \DateTime($talk['submitted']);
-
-            $talk['submitted'] = new \MongoDate(
-                $dt->format('U'),
-                $dt->format('u')
-            );
-        } else {
-            // stupid hack for those with no date, so they can at least be sorted
-            $talk['submitted'] = new \MongoDate($talk['row_id']*60);
-        }
+        $dt = new \DateTime($talk['submitted']);
+        $talk['submitted'] = new \MongoDate(
+            $dt->format('U'),
+            $dt->format('u')
+        );
 
         // Find if talk exists by row ID
         $existing = $talks->findOne([
