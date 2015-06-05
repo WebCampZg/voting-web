@@ -31,7 +31,7 @@ class TalksController
      */
     public function listAction(Application $app)
     {
-        $talksIt = $this->db->talks->find()->sort(['submitted' => 1]);
+        $talksIt = $this->db->talks->find()->sort(['row_id' => 1]);
         $speakersIt = $this->db->speakers->find();
 
         $speakers = [];
@@ -44,7 +44,7 @@ class TalksController
         foreach ($talksIt as $talk) {
             $speakerID = (string) $talk['speaker_id'];
             $talk['speaker'] = $speakers[$speakerID];
-            $talk['submitted'] = isset($talk['submitted']) ? $talk['submitted']->sec : null;
+            $talk['submitted'] = $talk['submitted']->sec;
             $talk['avg_score'] = $this->getAverageScore($talk);
             $talks[] = $talk;
         }
@@ -66,13 +66,13 @@ class TalksController
 
         // Find next and previous talks
         $next = $this->db->talks
-            ->find(['submitted' => ['$gt' => $talk['submitted']]])
-            ->sort(['submitted' => 1])
+            ->find(['row_id' => ['$gt' => $talk['row_id']]])
+            ->sort(['row_id' => 1])
             ->limit(1)->getNext();
 
         $prev = $this->db->talks
-            ->find(['submitted' => ['$lt' => $talk['submitted']]])
-            ->sort(['submitted' => -1])
+            ->find(['row_id' => ['$lt' => $talk['row_id']]])
+            ->sort(['row_id' => -1])
             ->limit(1)->getNext();
 
         // Get a list of voting users to display non-voting users
