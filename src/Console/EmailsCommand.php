@@ -38,20 +38,25 @@ class EmailsCommand extends Command
 
     protected function configure()
     {
+        $defaultTemplate = realpath(__DIR__ . "/../../templates/emails/accepted_2015.twig");
+        $defaultTarget = realpath(__DIR__ . "/../../target");
+
         $this
             ->setName('emails')
             ->setDescription('Generates emails for accepted talks')
-            ->addArgument(
+            ->addOption(
                 'target',
-                InputArgument::REQUIRED,
-                'Where do you want to generate the emails?'
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Where do you want to generate the emails?',
+                $defaultTarget
             )
             ->addOption(
                 'template',
-                't',
+                null,
                 InputOption::VALUE_REQUIRED,
                 "Which email template to use",
-                "emails/accepted_2014.twig"
+                $defaultTemplate
             )
         ;
     }
@@ -62,9 +67,10 @@ class EmailsCommand extends Command
         $this->output->writeln("Fetching talks...");
 
         $template = $input->getOption('template');
-        $this->target = $input->getArgument('target');
-        if (!is_dir($this->target)) {
-            throw new \Exception("Not a valid target directory: $this->target");
+        $target = $input->getOption('target');
+
+        if (!is_dir($target)) {
+            throw new \Exception("Not a valid target directory: $target");
         }
 
         $talks = $this->app['db']->talks->find([
@@ -86,16 +92,17 @@ class EmailsCommand extends Command
 
             $speaker = $speakers[$speakerID];
 
-            $this->generateEmail($talk, $speaker, $template);
+            $this->generateEmail($talk, $speaker, $template, $target);
         }
         $output->writeln("");
         $output->writeln("<info>Done.</info>");
     }
 
-    private function generateEmail($talk, $speaker, $template)
+    private function generateEmail($talk, $speaker, $template, $target)
     {
         $filename = sprintf("%s - %s.eml", $speaker['name'], $talk['title']);
-        $target = $this->target . $filename;
+        $filename = strtr($filename, "\\/?*", "____");
+        $target = rtrim($target, '\\/') . '/' . $filename;
 
         $this->output->writeln("Generating: <comment>$target</comment>");
 
@@ -106,7 +113,6 @@ class EmailsCommand extends Command
 
         $template = $this->getTemplate($template);
         $email = $template->render($data);
-
 
         file_put_contents($target, $email);
     }
