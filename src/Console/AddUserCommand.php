@@ -52,7 +52,7 @@ class AddUserCommand extends Command
     {
         $this->output = $output;
 
-        $username = $input->getOption('username', $defaultUsername);
+        $username = $input->getOption('username');
         $password = $input->getOption('password');
         $isAdmin = $input->getOption('admin');
 
