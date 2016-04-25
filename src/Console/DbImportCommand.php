@@ -114,6 +114,8 @@ class DbImportCommand extends Command
                 people_user u ON a.user_id = u.id
             JOIN
                 people_tshirtsize t ON u.tshirt_size_id = t.id
+            WHERE
+                cfp_id = 2
             ;
 SQL;
 
@@ -141,6 +143,8 @@ SQL;
                 people_user u ON u.id = a.user_id
             JOIN
                 cfp_audienceskilllevel sl ON sl.id = pa.skill_level_id
+            WHERE
+                cfp_id = 2
             ORDER BY
                 row_id
             ;
@@ -163,7 +167,7 @@ SQL;
     private function saveSpeaker($speaker)
     {
         // Make the image path complete
-        $speaker['image'] = "https://2015.webcampzg.org/media/" . $speaker['image'];
+        $speaker['image'] = "https://2016.webcampzg.org/media/" . $speaker['image'];
 
         $speakers = $this->db->speakers;
 
