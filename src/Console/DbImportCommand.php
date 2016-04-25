@@ -114,8 +114,6 @@ class DbImportCommand extends Command
                 people_user u ON a.user_id = u.id
             JOIN
                 people_tshirtsize t ON u.tshirt_size_id = t.id
-            WHERE
-                cfp_id = 2
             ;
 SQL;
 
