@@ -42,6 +42,11 @@
                 $talk.find('.current-user-vote').html(data.score);
                 $talk.find('button[data-rating]').attr('class', 'btn btn-sm btn-default');
                 $talk.find('button[data-rating="' +  data.score +'"]').attr('class', 'btn btn-sm btn-primary');
+
+                // auto advance to next talk
+                if ($('#auto-advance').prop('checked')) {
+                    window.location.href = $('a#next_talk_url').attr('href');
+                }
             });
         }
 
