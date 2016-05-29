@@ -103,6 +103,22 @@
                     $(this).data('status')
                 );
             });
+
+            $(document).keydown(function(e) {
+                switch(e.which) {
+                    case 37: // left
+                        window.location.href = $('a#prev_talk_url').attr('href');
+                        break;
+
+                    case 39: // right
+                        window.location.href = $('a#next_talk_url').attr('href');
+                        break;
+
+                    default: return;
+                }
+
+                e.preventDefault();
+            });
         });
     </script>
 
