@@ -112,7 +112,7 @@ class DbImportCommand extends Command
                 cfp_applicant a
             JOIN
                 people_user u ON a.user_id = u.id
-            JOIN
+            LEFT JOIN
                 people_tshirtsize t ON u.tshirt_size_id = t.id
             ;
 SQL;
