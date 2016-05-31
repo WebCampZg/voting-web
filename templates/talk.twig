@@ -96,10 +96,10 @@
 
     <div class="row">
         <div class="col-md-6">
-            {% if prev %}<a href="{{ path('talk', { id: prev._id }) }}">&lt;&lt;&nbsp;{{ prev.title }}</a>{% endif %}<br />
+            {% if prev %}<a href="{{ path('talk', { id: prev._id }) }}" id="prev_talk_url">&lt;&lt;&nbsp;{{ prev.title }}</a>{% endif %}<br />
         </div>
         <div class="col-md-6 text-right">
-            {% if next %}<a href="{{ path('talk', { id: next._id }) }}">{{ next.title }}&nbsp;&gt;&gt;</a>{% endif %}
+            {% if next %}<a href="{{ path('talk', { id: next._id }) }}" id="next_talk_url">{{ next.title }}&nbsp;&gt;&gt;</a>{% endif %}
         </div>
     </div>
 {% endblock %}
