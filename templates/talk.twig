@@ -3,6 +3,24 @@
 {% set rating = talk.scores[user.username]|default(null) %}
 {% set votes = talk.scores|default([])|length %}
 
+{% block js %}
+<script type="text/javascript">
+    $(document).keydown(function(e) {
+        var rating;
+        if (e.which >= 97 && e.which <= 101) {
+            rating = e.which - 96;
+        } else if (e.which >= 49 && e.which <= 53) {
+            rating = e.which - 48;
+        }
+
+        if (rating !== undefined) {
+            e.preventDefault();
+            $("button.rate-talk[data-rating='" + rating + "']").click();
+        }
+    });
+</script>
+{% endblock %}
+
 {% block content %}
     <div class="row">
         <div class="col-md-6 talk" data-talk-id="{{ talk._id }}">

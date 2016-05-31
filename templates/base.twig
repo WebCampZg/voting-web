@@ -40,13 +40,8 @@
                 $talk.find('.avg-score').html(avg_score);
                 $talk.find('.votes').html(data.votes);
                 $talk.find('.current-user-vote').html(data.score);
-                $talk.find('button[data-rating]').attr('class', 'btn btn-sm btn-default');
-                $talk.find('button[data-rating="' +  data.score +'"]').attr('class', 'btn btn-sm btn-primary');
-
-                // auto advance to next talk
-                if ($('#auto-advance').prop('checked')) {
-                    window.location.href = $('a#next_talk_url').attr('href');
-                }
+                $talk.find('button[data-rating]').attr('class', 'rate-talk btn btn-sm btn-default');
+                $talk.find('button[data-rating="' +  data.score +'"]').attr('class', 'rate-talk btn btn-sm btn-primary');
             });
         }
 
@@ -62,7 +57,7 @@
                 $talk.find('.avg-score').html(avg_score);
                 $talk.find('.votes').html(data.votes);
                 $talk.find('.current-user-vote').html('-');
-                $talk.find('button[data-rating]').attr('class', 'btn btn-sm btn-default');
+                $talk.find('button[data-rating]').attr('class', 'rate-talk btn btn-sm btn-default');
             });
         }
 
@@ -112,17 +107,15 @@
             $(document).keydown(function(e) {
                 switch(e.which) {
                     case 37: // left
+                        e.preventDefault();
                         window.location.href = $('a#prev_talk_url').attr('href');
                         break;
 
                     case 39: // right
+                        e.preventDefault();
                         window.location.href = $('a#next_talk_url').attr('href');
                         break;
-
-                    default: return;
                 }
-
-                e.preventDefault();
             });
         });
     </script>
