@@ -11,7 +11,9 @@
                 <th>Title</th>
                 <th>Duration</th>
                 <th>Level</th>
-                <th>Avg.</th>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <th>Avg.</th>
+                {% endif %}
                 <th>Votes</th>
                 <th>Status</th>
                 {% if is_granted('ROLE_VOTER') %}
@@ -32,7 +34,9 @@
                     <td><a href="/talks/{{ talk._id }}">{{ talk.title }}</a></td>
                     <td>{{ talk.duration }}</td>
                     <td>{{ talk.level }}</td>
-                    <td class="avg-score">{{ talk.avg_score|number_format(3) }}</td>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <td class="avg-score">{{ talk.avg_score|number_format(3) }}</td>
+                    {% endif %}
                     <td class="votes">{{ votes }}</td>
                     <td class="status">{{ talk.status|title }}</td>
                     {% if is_granted('ROLE_VOTER') %}
