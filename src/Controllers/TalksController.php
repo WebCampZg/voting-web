@@ -46,12 +46,50 @@ class TalksController
             $talk['speaker'] = $speakers[$speakerID];
             $talk['submitted'] = $talk['submitted']->sec;
             $talk['avg_score'] = $this->getAverageScore($talk);
+            $talk['sponsor'] = $this->getSponsor($talk['speaker']);
             $talks[] = $talk;
         }
 
         return $app['twig']->render('talks.twig', [
             'talks' => $talks,
         ]);
+    }
+
+    /**
+     * Hacky way to mark talks submitted by sponsors.
+     *
+     * @return string Sponsor name if detected or null.
+     */
+    private function getSponsor($speaker)
+    {
+        // Sponsor names with any synonyms, first name will be used as label
+        $sponsors = [
+            ["dobar kod", "dobarkod", "goodcode", "good code"],
+            ["giscloud"],
+            ["infinum"],
+            ["intercom"],
+            ["kendu"],
+            ["reversing labs", "reversing"],
+            ["trikoder/undabot", "trikoder", "undabot"],
+        ];
+
+        // Speaker fields to check for strings
+        $fields = ["short_bio", "email"];
+
+        foreach ($sponsors as $names) {
+            foreach ($fields as $field) {
+                $value = $speaker[$field];
+                foreach ($names as $name) {
+                    if (preg_match("/$name/i", $value)) {
+                        // Yes, this is 4 levels deep, suck it object calisthenics
+                        return $names[0];
+                    }
+                }
+            }
+        }
+
+        // Explicit is better than implicit
+        return null;
     }
 
     /**
