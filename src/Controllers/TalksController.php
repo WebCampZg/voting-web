@@ -70,7 +70,7 @@ class TalksController
             ["intercom"],
             ["kendu"],
             ["reversing labs", "reversing"],
-            ["trikoder/undabot", "trikoder", "undabot"],
+            ["trikoder | undabot", "trikoder", "undabot"],
         ];
 
         // Speaker fields to check for strings
