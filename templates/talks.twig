@@ -31,7 +31,12 @@
                 <tr class="talk{% if talk.status == 'accepted' %} success{% endif %}" data-talk-id="{{ talk._id }}">
                     <td>{{ talk.submitted|date('Y-m-d H:i') }}</td>
                     <td>{{ talk.speaker.name }}</td>
-                    <td><a href="/talks/{{ talk._id }}">{{ talk.title }}</a></td>
+                    <td>
+                        <a href="/talks/{{ talk._id }}">{{ talk.title }}</a>
+                        {% if is_granted('ROLE_ADMIN') and talk.sponsor %}
+                            <span class="label label-info">{{ talk.sponsor|upper }}</span>
+                        {% endif %}
+                    </td>
                     <td>{{ talk.duration }}</td>
                     <td>{{ talk.level }}</td>
                     {% if is_granted('ROLE_ADMIN') %}
