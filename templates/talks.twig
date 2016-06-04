@@ -6,6 +6,7 @@
     <table id="talks-table" class="table table-condensed table-hover table-striped">
         <thead>
             <tr>
+                <th>#</th>
                 <th>Submitted</th>
                 <th>Speaker</th>
                 <th>Title</th>
@@ -29,6 +30,7 @@
                 {% set votes = talk.scores|default([])|length %}
 
                 <tr class="talk{% if talk.status == 'accepted' %} success{% endif %}" data-talk-id="{{ talk._id }}">
+                    <td>{{ loop.index }}</td>
                     <td>{{ talk.submitted|date('Y-m-d H:i') }}</td>
                     <td>{{ talk.speaker.name }}</td>
                     <td>
