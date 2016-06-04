@@ -1,4 +1,5 @@
-.score-counts-chart { height: 250px }
-#vote-counts { height: 300px }
-#score-variance { height: 1800px }
+#vote-counts,
+#average-vote,
+#score-distribution { height: 300px }
+
 tfoot td { font-weight: bold; }

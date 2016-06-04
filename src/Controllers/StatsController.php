@@ -22,8 +22,15 @@ class StatsController
         $talks = $this->db->talks->find();
         $users = $this->db->users
             ->distinct('username', ['roles' => 'ROLE_VOTER']);
-
         sort($users);
+
+        $speakersIt = $this->db->speakers->find();
+
+        $speakers = [];
+        foreach ($speakersIt as $speaker) {
+            $speakerID = (string) $speaker['_id'];
+            $speakers[$speakerID] = $speaker;
+        }
 
         // All scores given per group
         $scoresByUser = [];
@@ -84,26 +91,35 @@ class StatsController
 
         // Average score by user
         $averageScores = [];
+        foreach ($users as $user) {
+            $averageScores[$user] = 0;
+        }
+
         foreach ($scoresByUser as $user => $scores) {
             if (empty($scores)) {
                 $averageScores[$user] = null;
             }
-            $averageScores[$user] = array_sum($scores) / count($scores);
+            $averageScores[$user] = round(array_sum($scores) / count($scores), 3);
         }
         ksort($averageScores);
-
 
         // Standard deviation in scores per talk
         $stdev = [];
         foreach ($talks as $talk) {
-            $title = $talk['title'];
-            if (mb_strlen($title) > 50) {
-                $title = mb_substr($title, 0, 47) . "...";
-            }
-            $stdev[$title] = $this->stdev($talk['scores']);
+            $speakerID = (string) $talk['speaker_id'];
+            $stdev[] = [
+                "title" => $talk["title"],
+                "speaker" => $speakers[$speakerID],
+                "average" => array_sum($talk['scores']) / count($talk['scores']),
+                "stdev" => $this->stdev($talk['scores']),
+            ];
         }
-
-        asort($stdev);
+        usort($stdev, function ($a, $b) {
+            if ($a['stdev'] == $b['stdev']) {
+                return 0;
+            }
+            return $a['stdev'] > $b['stdev'] ? -1 : 1;
+        });
 
         return $app['twig']->render('stats.twig', [
             'score_counts' => $scoreCounts,
@@ -112,8 +128,7 @@ class StatsController
             'average_scores' => $averageScores,
             'heatmap_data' => $heatmapData,
             'users' => $users,
-            'stdev_groups' => array_keys($stdev),
-            'stdev_data' => array_values($stdev),
+            'stdev' => $stdev,
         ]);
     }
 

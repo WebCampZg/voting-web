@@ -36,14 +36,33 @@
 
     <p>Shows the standard deviation in scores per talk. Smaller value means user groups were in agreement.</p>
 
-    <div id="score-stdev"></div>
+    <table class="table table-condensed table-hover" id="score-stdev">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Title</th>
+                {# <th>Average</th> #}
+                <th>Std. dev.</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for talk in stdev %}
+            <tr>
+                <td>{{ talk.speaker.name }}</td>
+                <td>{{ talk.title }}</td>
+                {# <td>{{ talk.average|round(3) }}</td> #}
+                <td>{{ talk.stdev|round(3) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
 {% endblock %}
 
 {% block js %}
-    <script src="/static/highcharts/4.0.3/highcharts.js"></script>
-    <script src="/static/highcharts/4.0.3/themes/grid.js"></script>
-    <script src="/static/highcharts/4.0.3/modules/heatmap.js"></script>
+    <script src="/static/highcharts/4.2.5/highcharts.js"></script>
+    <script src="/static/highcharts/4.2.5/themes/grid.js"></script>
+    <script src="/static/highcharts/4.2.5/modules/heatmap.js"></script>
 
     <script type="text/javascript">
         var vote_counts = {{ vote_counts|json_encode|raw }};
@@ -99,15 +118,17 @@
                 },
                 "yAxis": {
                     "title": {
-                        "text": "Number of votes"
-                    }
+                        "text": "Average score"
+                    },
+                    "min": 1,
+                    "max": 5
                 },
                 "legend": {
                     "enabled": false
                 },
                 "series": [
                     {
-                        "name": "Average vote",
+                        "name": "Average score",
                         "data": object_values(average_scores)
                     }
                 ]
@@ -147,7 +168,7 @@
                 },
                 "yAxis": {
                     "title": {
-                        "text": "Number of votes"
+                        "text": "Score distribution"
                     }
                 },
                 "series": score_dist_series
@@ -190,32 +211,7 @@
                 ]
             });
 
-            $('#score-stdev').highcharts({
-                "chart": {
-                    "type": "bar"
-                },
-                "title": {
-                    "text": ""
-                },
-                "xAxis": {
-                    "categories": {{ stdev_groups|json_encode|raw }}
-                },
-                "yAxis": {
-                    "title": {
-                        "text": "Number of votes"
-                    }
-                },
-                "legend": {
-                    "enabled": false
-                },
-                "series": [
-                    {
-                        "name": "Average vote",
-                        "data": {{ stdev_data|json_encode|raw }}
-                    }
-                ]
-            });
-
+            $("#score-stdev").tablesorter();
         });
     </script>
 {% endblock %}
