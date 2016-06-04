@@ -31,7 +31,28 @@ class TalksController
      */
     public function listAction(Application $app)
     {
-        $talksIt = $this->db->talks->find()->sort(['row_id' => 1]);
+        return $app['twig']->render('talks.twig', [
+            'talks' => $this->getTalks()
+        ]);
+    }
+
+    public function listVotesAction(Application $app)
+    {
+        if (!$app['security']->isGranted('ROLE_ADMIN')) {
+            $app->abort(403, "Only admins, sorry.");
+        }
+
+        $groups = $this->db->users->distinct('username', ['roles' => 'ROLE_VOTER']);
+        sort($groups);
+
+        return $app['twig']->render('votes.twig', [
+            'talks' => $this->getTalks(),
+            'groups' => $groups,
+        ]);
+    }
+
+    private function getSpeakers()
+    {
         $speakersIt = $this->db->speakers->find();
 
         $speakers = [];
@@ -40,6 +61,14 @@ class TalksController
             $speakers[$speakerID] = $speaker;
         }
 
+        return $speakers;
+    }
+
+    private function getTalks()
+    {
+        $speakers = $this->getSpeakers();
+
+        $talksIt = $this->db->talks->find()->sort(['row_id' => 1]);
         $talks = [];
         foreach ($talksIt as $talk) {
             $speakerID = (string) $talk['speaker_id'];
@@ -50,9 +79,7 @@ class TalksController
             $talks[] = $talk;
         }
 
-        return $app['twig']->render('talks.twig', [
-            'talks' => $talks,
-        ]);
+        return $talks;
     }
 
     /**

@@ -32,6 +32,9 @@ $app->get('/login', function(Request $request) use ($app) {
 $app->get('/talks', "talks.controller:listAction")
     ->bind('talks');
 
+$app->get('/votes', "talks.controller:listVotesAction")
+    ->bind('votes');
+
 $app->get('/talks/{id}', "talks.controller:showAction")
     ->assert('id', '[0-9a-f]{24}')
     ->bind('talk');

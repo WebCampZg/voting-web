@@ -1,0 +1,50 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+    <h1>User group votes</h1>
+
+    <table id="votes-table" class="table table-condensed table-hover table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Talk</th>
+                {% for group in groups %}
+                    <th>{{ group }}</th>
+                {% endfor %}
+                <th>Avg.</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for talk in talks %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>
+                        <a href="/talks/{{ talk._id }}">
+                            <i>{{ talk.speaker.name }}</i> : {{ talk.title }}
+                        </a>
+                    </td>
+                    {% for group in groups %}
+                        <td>
+                            {% if talk.scores[group] is defined %}
+                                {{ talk.scores[group] }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                    <td class="avg-score">
+                        {{ talk.avg_score|number_format(3) }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#votes-table").tablesorter();
+        });
+    </script>
+{% endblock %}
