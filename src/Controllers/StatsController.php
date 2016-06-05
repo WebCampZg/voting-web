@@ -108,6 +108,7 @@ class StatsController
         foreach ($talks as $talk) {
             $speakerID = (string) $talk['speaker_id'];
             $stdev[] = [
+                "_id" => $talk["_id"],
                 "title" => $talk["title"],
                 "speaker" => $speakers[$speakerID],
                 "average" => array_sum($talk['scores']) / count($talk['scores']),

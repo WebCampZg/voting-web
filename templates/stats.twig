@@ -49,7 +49,7 @@
             {% for talk in stdev %}
             <tr>
                 <td>{{ talk.speaker.name }}</td>
-                <td>{{ talk.title }}</td>
+                <td><a href="/talks/{{ talk._id }}">{{ talk.title }}</a></td>
                 {# <td>{{ talk.average|round(3) }}</td> #}
                 <td>{{ talk.stdev|round(3) }}</td>
             </tr>
