@@ -1,0 +1,5 @@
+---
+# defaults file for mysql
+USERNAME: "dev"
+PASSWORD: "dev"
+DB_NAME: "dev"

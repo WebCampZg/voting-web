@@ -1,0 +1,48 @@
+---
+# tasks file for Mongo
+
+- name: Add 10gen mongo ppa key
+  apt_key: id=7F0CEB10 keyserver=hkp://keyserver.ubuntu.com:80 state=present
+  when: ansible_os_family == "Debian"
+
+- name: Add 10gen mongo repository
+  apt_repository: repo='deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' state=present update_cache=yes
+  when: ansible_os_family == "Debian"
+
+- name: Install the mongo tools and libraries
+  apt: name="{{ item }}=2.6.1" update_cache=yes
+  with_items:
+    - mongodb-org
+    - mongodb-org-server
+    - mongodb-org-shell
+    - mongodb-org-mongos
+    - mongodb-org-tools
+  when: ansible_os_family == "Debian"
+
+- name: Set pear to auto discover
+  shell: pear config-set auto_discover 1
+  ignore_errors: yes
+
+- name: Test if mongo driver has been installed
+  shell:  pecl list | grep -i 'mongo'
+  register: mongo_driver_exists
+  changed_when: "'mongo' in mongo_driver_exists.stdout"
+  failed_when: "'mongo' not in mongo_driver_exists.stdout"
+  ignore_errors: yes
+
+- name: Install mongo driver
+  shell: pecl install -f mongo-1.4.1
+  when: ansible_os_family == "Debian" and use_php == true
+  tags: [packages, gearman]
+
+- name: Make sure the mongo.ini does not reference the extension dir
+  copy: dest="{{ php_mods_available }}/mongo.ini" content="; configuration for php mongo module\n; priority=20\nextension=mongo.so\n"
+  ignore_errors: true
+  when: ansible_os_family == "Debian" and use_php == true
+
+- name: Enable the mongo.ini
+  shell: php5enmod mongo
+  when: ansible_os_family == "Debian" and use_php == true
+  tags: [packages, gearman]
+  notify:
+    - reload php-fpm

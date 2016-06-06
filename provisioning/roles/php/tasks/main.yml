@@ -1,0 +1,78 @@
+---
+
+- name: Add the OS specific varibles
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Add php 5.6 repository if needed for quantal and newer (ondrej)
+  # Add specified repository into sources list.
+  apt_repository: repo='ppa:ondrej/php5-5.6/ubuntu trusty main' state=present update_cache=yes
+  when: ansible_os_family == "Debian" and ansible_distribution_version|float >= 12.10
+  tags: [php, php56, packages]
+
+- name: Install the php libraries (APT)
+  apt: name={{ item }} state=latest update_cache=yes
+  with_items: php_packages
+  when: ansible_os_family == "Debian" and php_packages|lower != 'none'
+  tags: [php, packages]
+
+- name: Install the php5-apcu for php > 5.5 (APT)
+  apt: name=php5-apcu state=latest update_cache=yes
+  when: ansible_os_family == "Debian" and ansible_distribution_version|float >= 12.10 and use_php56 == true and use_php_apc == true
+  tags: [php, php_fpm, packages]
+
+- name: Copy the timezone cli configuration
+  copy: src=files/php/timezone.ini dest={{ php_mods_available }}/timezone.ini
+  tags: [configuration,php]
+
+- name: Enable the timezone.ini for cli
+  shell: php5enmod -s cli timezone
+  when: ansible_os_family == "Debian"
+  tags: [packages, php]
+
+- name: Install xdebug
+  apt: name={{ item }} state=present update_cache=yes
+  # located in vars/main.yml
+  with_items: php_xdebug
+  when: ansible_os_family == "Debian" and use_xdebug == true
+  tags: [php, packages, xdebug, dev]
+
+- name: Create xdebug log dir
+  file: state=directory group=vagrant owner=vagrant recurse=yes path=/var/log/xdebug
+  when: ansible_os_family == "Debian" and use_xdebug == true
+  tags: [php, packages, xdebug, dev]
+
+- name: copy the xdebug.ini
+  copy: src=files/php/xdebug.ini dest={{ php_mods_available }}/xdebug.ini
+  when: ansible_os_family == "Debian" and use_xdebug == true
+
+- name: Copy the xdebug profiler configuration
+  copy: src=files/php/xdebug-profiler.ini dest={{ php_mods_available }}/xdebug-profiler.ini
+  when: ansible_os_family == "Debian" and use_xdebug_profiler == true
+  tags: [php, configuration, xdebug, dev]
+
+- name: Update bashrc for with alias for profiling
+  lineinfile:
+    dest=/home/vagrant/.bashrc
+    line="alias php-profiler='XDEBUG_CONFIG=\"profiler_enable=1\" /usr/bin/php'"
+    regexp="^alias php-profiler='XDEBUG_CONFIG=\"profiler_enable=1\" /usr/bin/php'$"
+    state=present
+    insertafter=EOF
+    create=True
+  when: ansible_os_family == "Debian" and use_xdebug_profiler == true
+  tags: [php, configuration, xdebug, dev]
+
+- name: Update bashrc for with alias for valgrinding
+  lineinfile:
+    dest=/home/vagrant/.bashrc
+    line="alias php-valgrind='sudo valgrind --tool=callgrind --dump-instr=yes --trace-jump=yes -v /usr/bin/php'"
+    regexp="^alias php-valgrind='sudo valgrind --tool=callgrind --dump-instr=yes --trace-jump=yes -v /usr/bin/php'$"
+    state=present
+    insertafter=EOF
+    create=True
+  when: ansible_os_family == "Debian" and use_xdebug_profiler == true
+  tags: [php, configuration, xdebug, dev]
+
+- name: Enable the timezone.ini for cli
+  shell: php5enmod -s cli xdebug-profiler
+  when: ansible_os_family == "Debian" and use_xdebug_profiler == true
+  tags: [php, configuration, xdebug, dev]

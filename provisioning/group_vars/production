@@ -1,0 +1,16 @@
+---
+# default variables for production hosts
+
+# project root in the default host (in this case Vagrant box)
+PROJECT_ROOT: "/var/www"
+
+# application environment
+APPLICATION_ENVIRONMENT: "production"
+
+# set the key as needed from the datadog
+DD_API_KEY: ""
+
+# defaults file for mysql
+USERNAME: "dev"
+PASSWORD: "dev"
+DB_NAME: "dev"
