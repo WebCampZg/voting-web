@@ -10,6 +10,7 @@
     - { role: composer, use_composer_no_dev: no }
     - { role: mongodb, use_php: true }
     - { role: nginx, use_php: true }
+    - { role: config }
 
   handlers:
     - include: roles/nginx/handlers/main.yml
